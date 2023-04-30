@@ -21,7 +21,7 @@ export const ListSubInfo = styled.ul`
   display: flex;
   gap: 22px;
   list-style: none;
-  padding: 0;
+  padding: 20px 0;
   margin: 0;
 `;
 export const ContainerSub = styled.div`
