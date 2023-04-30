@@ -18,7 +18,7 @@ const Review = () => {
   return (
     <>
       {review.length === 0 ? (
-        <div>There are currently no reviews</div>
+        <p>There are currently no reviews</p>
       ) : (
         <ListReview>
           {review.map(({ author, content, id, author_details: { rating } }) => {
