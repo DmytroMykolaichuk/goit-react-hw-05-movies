@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Container } from 'components/SubPageList/DetailsMovie.styled';
 import LinkBack from 'components/SubPageList/DetailsMovie.styled';
 import { useLocation } from 'react-router-dom';
@@ -22,4 +23,13 @@ export const InfoMovie = ({ title, genres, poster_path, release_date, vote_avera
       </div>
     </Container>
   );
+};
+
+InfoMovie.propTypes = {
+  title: PropTypes.string.isRequired,
+  poster_path: PropTypes.string.isRequired,
+  release_date: PropTypes.string.isRequired,
+  vote_average: PropTypes.number.isRequired,
+  overview: PropTypes.string.isRequired,
+  genres: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
 };
