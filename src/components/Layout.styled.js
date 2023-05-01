@@ -24,5 +24,6 @@ export const Nav = styled.nav`
 `;
 
 export const Section = styled.section`
+  font-size: 24px;
   padding: 20px 30px;
 `;

@@ -14,7 +14,7 @@ export default LinkBack;
 export const Container = styled.div`
   display: flex;
   gap: 20px;
-  font-size: 20px;
+  font-size: 24px;
 `;
 
 export const ListSubInfo = styled.ul`

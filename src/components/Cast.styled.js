@@ -18,3 +18,6 @@ export const Name = styled.p`
   padding: 5px 0;
   margin: 0;
 `;
+export const ContainerName = styled.div`
+  width: 200px;
+`;
