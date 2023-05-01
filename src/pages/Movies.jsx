@@ -1,38 +1,36 @@
-import axios from 'axios';
-import { Circles } from 'react-loader-spinner';
+import { fetchQueryMovies } from 'service/appi';
 import { useEffect, useState } from 'react';
-import { useSearchParams, Link, useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Input, Button } from 'components/Movies.styled';
+import { Loader } from 'components/Loader';
+import { MoviesList } from 'components/MoviesList';
 
 const Movies = () => {
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState(null);
   const [status, setStatus] = useState('idle');
-  const [searchParams, setSearchParams] = useSearchParams();
-  let location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams({});
 
   useEffect(() => {
     const query = searchParams.get('query');
     if (query) {
-      fetchQuery(query);
+      getQueryMovies(query);
     }
   }, [searchParams]);
 
   function onSubmit(e) {
     e.preventDefault();
-    const query = e.target.query.value ? { query: e.target.query.value } : {};
+    const { value } = e.target.query;
+    const query = value.trim() ? { query: value } : {};
     setSearchParams(query);
   }
 
-  async function fetchQuery(query) {
+  async function getQueryMovies(query) {
     try {
       setStatus('pending');
-      const res = await axios.get(
-        `https://api.themoviedb.org/3/search/movie?api_key=352708f90836dd2b75b209ae082e91df&language=en-US&page=1&include_adult=false&query=${query}`
-      );
-      setMovies(res.data.results);
+      const data = await fetchQueryMovies(query);
+      setMovies(data);
       setStatus('responded');
-    } catch (error) {
-      console.log(error);
+    } catch {
       setStatus('rejected');
     }
   }
@@ -41,30 +39,10 @@ const Movies = () => {
     <>
       <form onSubmit={onSubmit}>
         <Input type="text" name="query" placeholder="Search..." />
-        <Button type="submit">Search</Button>
+        <Button type="submit">Go</Button>
       </form>
-      {status === 'responded' && (
-        <ul>
-          {movies.map(movie => (
-            <li key={movie.id}>
-              <Link to={`/movies/${movie.id}`} state={{ from: location }}>
-                {movie.title || movie.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-      {status === 'pending' && (
-        <Circles
-          height="80"
-          width="80"
-          color="#f8a100"
-          ariaLabel="circles-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-          visible={true}
-        />
-      )}
+      {status === 'responded' && <MoviesList movies={movies} />}
+      {status === 'pending' && <Loader />}
       {status === 'rejected' && <h2>Sorry we didn't find this page</h2>}
     </>
   );

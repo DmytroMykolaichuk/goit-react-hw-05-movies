@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 import StyledLink from './Layout.styled';
 import { Header, Nav, Section } from './Layout.styled';
 import { Suspense } from 'react';
-import { Circles } from 'react-loader-spinner';
+import { Loader } from 'components/Loader';
 const Layout = () => {
   return (
     <>
@@ -14,19 +14,7 @@ const Layout = () => {
       </Header>
       <main>
         <Section>
-          <Suspense
-            fallback={
-              <Circles
-                height="80"
-                width="80"
-                color="#f8a100"
-                ariaLabel="circles-loading"
-                wrapperStyle={{}}
-                wrapperClass=""
-                visible={true}
-              />
-            }
-          >
+          <Suspense fallback={<Loader />}>
             <Outlet />
           </Suspense>
         </Section>

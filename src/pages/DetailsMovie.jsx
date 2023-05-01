@@ -1,10 +1,9 @@
-import axios from 'axios';
-import StyledLink from 'components/Layout.styled';
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { Outlet, useParams, useLocation } from 'react-router-dom';
-import LinkBack from 'components/DetailsMovie.styled';
-import { Container, ListSubInfo, ContainerSub } from 'components/DetailsMovie.styled';
-import { Circles } from 'react-loader-spinner';
+import { fetchDetailsMovie } from 'service/appi';
+import { Suspense, useEffect, useState } from 'react';
+import { Outlet, useParams } from 'react-router-dom';
+import { Loader } from 'components/Loader';
+import { InfoMovie } from 'components/Cast/InfoMovie';
+import { SubPageList } from 'components/SubPageList/SubPageList';
 
 const DetailsMovie = () => {
   const { movieId } = useParams();
@@ -12,25 +11,19 @@ const DetailsMovie = () => {
   const [dataMovie, setDataMovie] = useState({});
   const [status, setStatus] = useState('idle');
   useEffect(() => {
-    fetchDetailsMovie(movieId);
+    getDetailsMovie(movieId);
   }, [movieId]);
 
-  async function fetchDetailsMovie(movieId) {
+  async function getDetailsMovie(movieId) {
     try {
       setStatus('pending');
-      const res = await axios.get(
-        `https://api.themoviedb.org/3/movie/${movieId}?api_key=352708f90836dd2b75b209ae082e91df&language=en-US&external_source=imdb_id`
-      );
-
-      setDataMovie(res.data);
+      const data = await fetchDetailsMovie(movieId);
+      setDataMovie(data);
       setStatus('responded');
-    } catch (error) {
-      console.log(error);
+    } catch {
       setStatus('rejected');
     }
   }
-  const location = useLocation();
-  const backLinkRef = useRef(location.state?.from ?? '/');
 
   const { title, overview, genres, poster_path, release_date, vote_average } = dataMovie;
 
@@ -38,58 +31,20 @@ const DetailsMovie = () => {
     <>
       {status === 'responded' && (
         <>
-          <Container>
-            <LinkBack to={backLinkRef.current}>{`<== Back`}</LinkBack>
-            <img src={poster_path && `https://image.tmdb.org/t/p/w400${poster_path}`} alt={title} />
-            <div>
-              <h1>
-                {title}({Number.parseInt(release_date)})
-              </h1>
-              <p>User score: {vote_average}</p>
-              <b>Overview</b>
-              <p>{overview}</p>
-              <b>Ganres</b>
-              <p>{genres && genres.map(el => el.name).join(', ')}</p>
-            </div>
-          </Container>
-          <ContainerSub>
-            <h2>Additional information</h2>
-            <ListSubInfo>
-              <li>
-                <StyledLink to="cast">Cast</StyledLink>
-              </li>
-              <li>
-                <StyledLink to="reviews">Reviews</StyledLink>
-              </li>
-            </ListSubInfo>
-          </ContainerSub>
+          <InfoMovie
+            genres={genres}
+            title={title}
+            overview={overview}
+            vote_average={vote_average}
+            poster_path={poster_path}
+            release_date={release_date}
+          />
+          <SubPageList />
         </>
       )}
-      {status === 'pending' && (
-        <Circles
-          height="80"
-          width="80"
-          color="#f8a100"
-          ariaLabel="circles-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-          visible={true}
-        />
-      )}
+      {status === 'pending' && <Loader />}
       {status === 'rejected' && <h2>Sorry we didn't find this page</h2>}
-      <Suspense
-        fallback={
-          <Circles
-            height="80"
-            width="80"
-            color="#f8a100"
-            ariaLabel="circles-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-          />
-        }
-      >
+      <Suspense fallback={<Loader />}>
         <Outlet />
       </Suspense>
     </>
